@@ -1,0 +1,83 @@
+﻿<Window x:Class="EXIF_Rewrite.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EXIF_Rewrite"
+        mc:Ignorable="d"
+        Title="EXIF Retag" Height="600" Width="800" 
+        ResizeMode="CanResizeWithGrip" 
+        MinHeight="600" MinWidth="800" Loaded="Window_Loaded"
+>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <GroupBox Header="1.Select Desired Operation" >
+        <Grid Grid.Row="0" Margin="3" >
+            <!-- Select Operation -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>           
+            <GroupBox Grid.Row="0" Grid.Column="0" Margin="3" Header="Retag images using CSV">
+               <!-- Select Input CSV -->
+                
+                <Grid Grid.Row="0" Margin="3" >
+                    <!-- Select Operation -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Button Content="Open CSV" Name="btnLoadCSV" Grid.Row="1" Margin="3" Click="btnLoadCSV_Click"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Row="0" Grid.Column="1" Margin="3" Header="Other Operations">
+                <Grid Grid.Row="0" Margin="3" >
+                    <!-- Select Operation -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <ComboBox  Margin="3" Name="cbCustomOperations" Grid.Row="0"/>
+                    <Button Grid.Row="1" Content="Select" Margin="3" Name="btnSelectCustomOp" Click="btnSelectCustomOp_Click"/>
+                </Grid>
+            </GroupBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Name="gbSettings" Visibility="Visible" Header="2. Settings">
+            <!-- Dynamically loaded section based on user options-->
+            <Grid Name="gridSettings"/>
+        </GroupBox>
+        <GroupBox Header="3. Images to modify" Grid.Row="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Content="Select Images" Name="btnLoadImages" Click="btnLoadImages_Click" AllowDrop="True" Drop="btnLoadImages_Drop" Margin="3"/>
+                <ListView Grid.Row="1" Name="listImages" Margin="3"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="4. Output Location" Grid.Row="3">                        
+                <Button Content="Select output directory" Grid.Row="0" Grid.Column="0" Margin="3"/>        
+        </GroupBox>
+        <GroupBox Header="5. Process" Grid.Row="4">
+            <Grid>
+                <Button Content="Start" Name="btnStart" Click="btnStart_Click" Panel.ZIndex="0"/>
+                <ProgressBar Name="pbProgress" Panel.ZIndex="1" Visibility="Hidden"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
