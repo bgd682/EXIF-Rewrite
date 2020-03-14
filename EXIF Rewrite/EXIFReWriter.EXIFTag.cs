@@ -8,7 +8,7 @@
         public enum EXIFTag
         {
             Ignored,// Default state
-            MakerNote,
+            FileName,
             UserComment,
             DateTime,
             DateTimeOriginal,
@@ -24,15 +24,15 @@
             switch (tag)
             {
                 case EXIFTag.Ignored: return "Ignored";
-                case EXIFTag.MakerNote: return "MakerNote";
-                case EXIFTag.UserComment: return "UserComment";
-                case EXIFTag.DateTime: return "DateTime";
-                case EXIFTag.DateTimeOriginal: return "DateTimeOriginal";
-                case EXIFTag.DateTimeDigitized: return "DateTimeDigitized";
-                case EXIFTag.GPSLatitude: return "GPSLatitude";
-                case EXIFTag.GPSLongitude: return "GPSLongitude";
-                case EXIFTag.GPSAltitude: return "GPSAltitude";
-                case EXIFTag.GPSTimeStamp: return "GPSTimeStamp";
+                case EXIFTag.FileName: return "File Name";
+                case EXIFTag.UserComment: return "User Comment";
+                case EXIFTag.DateTime: return "Date & Time";
+                case EXIFTag.DateTimeOriginal: return "Date & Time Original";
+                case EXIFTag.DateTimeDigitized: return "Date & Time Digitized";
+                case EXIFTag.GPSLatitude: return "GPS Latitude";
+                case EXIFTag.GPSLongitude: return "GPS Longitude";
+                case EXIFTag.GPSAltitude: return "GPS Altitude";
+                case EXIFTag.GPSTimeStamp: return "GPS Timestamp";
             }
             return "Ignored"; // fallthrough
         }

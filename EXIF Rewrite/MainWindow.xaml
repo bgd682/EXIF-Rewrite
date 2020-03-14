@@ -40,7 +40,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Button Content="Open CSV" Name="btnLoadCSV" Grid.Row="1" Margin="3" Click="btnLoadCSV_Click"/>
+                    <Button Content="Open CSV" Name="btnLoadCSV" Grid.Row="1" Margin="3" Click="btnLoadCSV_Click" AllowDrop="True" Drop="btnLoadCSV_Drop"/>
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Row="0" Grid.Column="1" Margin="3" Header="Other Operations">
@@ -67,15 +67,15 @@
                     <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0" Content="Select Images" Name="btnLoadImages" Click="btnLoadImages_Click" AllowDrop="True" Drop="btnLoadImages_Drop" Margin="3"/>
-                <ListView Grid.Row="1" Name="listImages" Margin="3"/>
+                <ListView Grid.Row="1" Name="listImages" Margin="3"  AllowDrop="True" Drop="btnLoadImages_Drop"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="4. Output Location" Grid.Row="3">                        
-                <Button Content="Select output directory" Grid.Row="0" Grid.Column="0" Margin="3"/>        
+                <Button Content="Select output directory" Grid.Row="0" Grid.Column="0" Margin="3" Name="btnSelectOutputFolder" Click="btnSelectOutputFolder_Click"/>        
         </GroupBox>
         <GroupBox Header="5. Process" Grid.Row="4">
             <Grid>
-                <Button Content="Start" Name="btnStart" Click="btnStart_Click" Panel.ZIndex="0"/>
+                <Button Content="Start" Name="btnStart" Click="btnStart_Click" Panel.ZIndex="0" IsEnabled="False"/>
                 <ProgressBar Name="pbProgress" Panel.ZIndex="1" Visibility="Hidden"/>
             </Grid>
         </GroupBox>
