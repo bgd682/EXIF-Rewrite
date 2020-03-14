@@ -58,7 +58,7 @@
         </GroupBox>
         <GroupBox Grid.Row="1" Name="gbSettings" Visibility="Visible" Header="2. Options">
             <!-- Dynamically loaded section based on user options-->
-            <Grid Name="gridSettings"/>
+            <Grid Name="gridSettings" Margin="3"/>
         </GroupBox>
         <GroupBox Header="3. Images to modify" Grid.Row="2">
             <Grid>

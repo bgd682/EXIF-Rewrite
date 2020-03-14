@@ -86,7 +86,7 @@ namespace EXIF_Rewrite
             var filePath = openFileDialog.FileName;
             cSVTags.Parse(filePath);
             //Have now parsed the CSV file
-
+            renderCSVInfo();
 
         }
         /// <summary>
@@ -95,30 +95,94 @@ namespace EXIF_Rewrite
         private void renderCSVInfo()
         {
             gridSettings.Children.Clear();
-            gridSettings.HorizontalAlignment = HorizontalAlignment.Center;
-            gridSettings.VerticalAlignment = VerticalAlignment.Center;
+            gridSettings.HorizontalAlignment = HorizontalAlignment.Stretch;
+            gridSettings.VerticalAlignment = VerticalAlignment.Top;
             gridSettings.ShowGridLines = true;
             gridSettings.ColumnDefinitions.Clear();
             gridSettings.RowDefinitions.Clear();
             {
-                var row = new RowDefinition
+                for (int i = 0; i < 2; i++)
                 {
-                    Height = GridLength.Auto
-                };
-                gridSettings.RowDefinitions.Add(row);
-                gridSettings.RowDefinitions.Add(row);
+                    var row = new RowDefinition
+                    {
+                        Height = GridLength.Auto
+                    };
+                    gridSettings.RowDefinitions.Add(row);
+                }
             }
             {
-                var col = new ColumnDefinition
-                {
-                    Width = GridLength.Auto
-                };
+
                 for (int i = 0; i < cSVTags.parsedColumns.Count; i++)
                 {
+                    var col = new ColumnDefinition
+                    {
+                        Width = GridLength.Auto
+                    };
                     gridSettings.ColumnDefinitions.Add(col);
                 }
             }
+            {
+                for (int i = 0; i < cSVTags.parsedColumns.Count; i++)
+                {
+                    var col = cSVTags.parsedColumns[i];
+                    {
 
+                        // For each column, add in a label (column) and dropdown (type)
+                        Label label = new Label();
+                        label.Content = col.ColumnName;
+                        Grid.SetRow(label, 0);
+                        Grid.SetColumn(label, i);
+                        gridSettings.Children.Add(label);
+                    }
+                    //Add dropdown for setting the type
+                    {
+                        ComboBox cb = new ComboBox();
+                        foreach (var e in Enum.GetValues(typeof(EXIFReWriter.EXIFTag)))
+                        {
+                            cb.Items.Add(EXIFReWriter.EXIFTagToString((EXIFReWriter.EXIFTag)e));
+                        }
+                        try
+                        {
+                            cb.SelectedIndex = (int)col.ColumnTag;
+                        }
+                        catch { }
+                        Grid.SetRow(cb, 1);
+                        Grid.SetColumn(cb, i);
+                        cb.Tag = i;
+                        cb.SelectionChanged += CsvTagColumn_SelectionChanged;
+                        gridSettings.Children.Add(cb);
+                    }
+                }
+            }
+        }
+
+        private void CsvTagColumn_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var c = (ComboBox)sender;
+            //Derive the column for this one and update the appropriate tag
+            try
+            {
+                int column = (int)c.Tag;
+                if (column < cSVTags.parsedColumns.Count)
+                { var columnData = cSVTags.parsedColumns[column];
+                    columnData.ColumnTag = (EXIFReWriter.EXIFTag)c.SelectedIndex;
+                    cSVTags.parsedColumns[column] = columnData;
+                }
+                else
+                {
+                    if (c.SelectedIndex > 0)
+                    {
+                        c.SelectedIndex = 0;//reset if save failed
+                    }
+                }
+            }
+            catch
+            {
+                if (c.SelectedIndex > 0)
+                {
+                    c.SelectedIndex = 0;//reset if save failed
+                }
+            }
         }
     }
 }
