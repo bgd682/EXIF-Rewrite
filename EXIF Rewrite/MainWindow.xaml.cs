@@ -85,9 +85,39 @@ namespace EXIF_Rewrite
             //Get the path of specified file
             var filePath = openFileDialog.FileName;
             cSVTags.Parse(filePath);
+            //Have now parsed the CSV file
 
 
-            //Load from this file into a struct of colums
+        }
+        /// <summary>
+        /// Renders out the current CSVTags into the UI
+        /// </summary>
+        private void renderCSVInfo()
+        {
+            gridSettings.Children.Clear();
+            gridSettings.HorizontalAlignment = HorizontalAlignment.Center;
+            gridSettings.VerticalAlignment = VerticalAlignment.Center;
+            gridSettings.ShowGridLines = true;
+            gridSettings.ColumnDefinitions.Clear();
+            gridSettings.RowDefinitions.Clear();
+            {
+                var row = new RowDefinition
+                {
+                    Height = GridLength.Auto
+                };
+                gridSettings.RowDefinitions.Add(row);
+                gridSettings.RowDefinitions.Add(row);
+            }
+            {
+                var col = new ColumnDefinition
+                {
+                    Width = GridLength.Auto
+                };
+                for (int i = 0; i < cSVTags.parsedColumns.Count; i++)
+                {
+                    gridSettings.ColumnDefinitions.Add(col);
+                }
+            }
 
         }
     }

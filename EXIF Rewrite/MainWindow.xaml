@@ -56,7 +56,7 @@
             </GroupBox>
             </Grid>
         </GroupBox>
-        <GroupBox Grid.Row="1" Name="gbSettings" Visibility="Visible" Header="2. Settings">
+        <GroupBox Grid.Row="1" Name="gbSettings" Visibility="Visible" Header="2. Options">
             <!-- Dynamically loaded section based on user options-->
             <Grid Name="gridSettings"/>
         </GroupBox>

@@ -7,7 +7,7 @@
         /// </summary>
        public enum EXIFTag
         {
-            Ignored,
+            Ignored,// Default state
             MakerNote,
             UserComment,
             DateTime,
