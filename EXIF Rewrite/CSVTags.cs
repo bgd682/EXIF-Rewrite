@@ -20,7 +20,7 @@ namespace EXIF_Rewrite
         {
 
         }
-        public List<ColumnData> parsedColumns;
+        public List<ColumnData> parsedColumns = new List<ColumnData> { };
         public bool Parse(string FileName)
         {
             // Load the provided file into a line buffer

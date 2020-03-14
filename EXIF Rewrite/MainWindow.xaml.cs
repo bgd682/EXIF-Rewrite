@@ -48,6 +48,8 @@ namespace EXIF_Rewrite
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            EXIFReWriter.rewriteTags(filesToBeTagged.ToArray(), outputFolderPath, cSVTags.parsedColumns);
+            
 
         }
 
