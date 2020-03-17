@@ -49,7 +49,7 @@ namespace EXIF_Rewrite
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             EXIFReWriter.rewriteTags(filesToBeTagged.ToArray(), outputFolderPath, cSVTags.parsedColumns);
-            
+
 
         }
 
@@ -236,7 +236,17 @@ namespace EXIF_Rewrite
                 if (column < cSVTags.parsedColumns.Count)
                 {
                     var columnData = cSVTags.parsedColumns[column];
-                    columnData.ColumnTag = (EXIFReWriter.EXIFTag)c.SelectedIndex;
+                    var possibleOptions = (EXIFReWriter.EXIFTag[])Enum.GetValues(typeof(EXIFReWriter.EXIFTag));
+                    if (c.SelectedIndex < possibleOptions.Length)
+                    {
+                        columnData.ColumnTag = possibleOptions[c.SelectedIndex];
+                    }else
+                    {
+                        if (c.SelectedIndex > 0)
+                        {
+                            c.SelectedIndex = 0;//reset if save failed
+                        }
+                    }
                     cSVTags.parsedColumns[column] = columnData;
                 }
                 else
@@ -288,8 +298,8 @@ namespace EXIF_Rewrite
         private void EnableStartCheck()
         {
             btnStart.IsEnabled = false;
-            
-            if (cSVTags.parsedColumns!=null && cSVTags.parsedColumns.Count > 1)
+
+            if (cSVTags.parsedColumns != null && cSVTags.parsedColumns.Count > 1)
             {
                 if (filesToBeTagged.Count > 0)
                 {

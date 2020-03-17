@@ -51,8 +51,33 @@ namespace EXIF_Rewrite
                         ColumnData c = new ColumnData
                         {
                             ColumnName = header,
-                            cells = new List<string> { }
+                            cells = new List<string> { },
+                            ColumnTag = EXIFReWriter.EXIFTag.Ignored
                         };
+                        if (c.ColumnName.ToLower().Contains("file") || c.ColumnName.ToLower().Contains("image"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.FileName;
+                        }
+                        else if (c.ColumnName.ToLower().Contains("latitude"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.GPSLatitude;
+                        }
+                        else if (c.ColumnName.ToLower().Contains("longitude"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.GPSLongitude;
+                        }
+                        else if (c.ColumnName.ToLower().Contains("altitude") || c.ColumnName.ToLower().Contains("height"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.GPSAltitude;
+                        }
+                        else if (c.ColumnName.ToLower().Contains("date"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.DateTime;
+                        }
+                        else if (c.ColumnName.ToLower().Contains("comment"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.UserComment;
+                        }
                         parsedColumns.Add(c);
                     }
 
@@ -71,6 +96,16 @@ namespace EXIF_Rewrite
                         {
                             Console.WriteLine("Passing Column %d on line %d", column, i);
                             parsedColumns[column].cells.Add("");
+                        }
+                        //Check for non-labelled columns
+                        for (; column < lineCols.Length; column++)
+                        {
+                            ColumnData c = new ColumnData
+                            {
+                                ColumnName = "Unknown " + column.ToString(),
+                                cells = new List<string> { }
+                            };
+                            parsedColumns.Add(c);
                         }
 
                     }
