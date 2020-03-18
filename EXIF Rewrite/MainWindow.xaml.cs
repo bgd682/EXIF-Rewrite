@@ -237,6 +237,7 @@ namespace EXIF_Rewrite
                 {
                     var columnData = cSVTags.parsedColumns[column];
                     var possibleOptions = (EXIFReWriter.EXIFTag[])Enum.GetValues(typeof(EXIFReWriter.EXIFTag));
+
                     if (c.SelectedIndex < possibleOptions.Length)
                     {
                         columnData.ColumnTag = possibleOptions[c.SelectedIndex];

@@ -13,9 +13,9 @@
             DateTime=0x0132,
             DateTimeOriginal=0x9003,
             //DateTimeDigitized=0x9004,
-            GPSLatitude=0x002,
-            GPSLongitude=0x0004,
-            GPSAltitude=0x0006,
+            GPSLatitude = 0x002,
+            GPSLongitude = 0x0004,
+            GPSAltitude = 0x0006,
             GPSTimeStamp=0x0007,
 
         }
@@ -34,7 +34,7 @@
                 case EXIFTag.GPSAltitude: return "GPS Altitude (m)";
                 case EXIFTag.GPSTimeStamp: return "GPS Timestamp";
             }
-            return "Ignored"; // fallthrough
+            return ""; // fallthrough
         }
     }
 }

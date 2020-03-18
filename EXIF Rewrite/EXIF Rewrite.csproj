@@ -94,6 +94,7 @@
     <Compile Include="CSVTags.cs" />
     <Compile Include="EXIFReWriter.cs" />
     <Compile Include="EXIFReWriter.EXIFTag.cs" />
+    <Compile Include="Fraction.cs" />
     <Compile Include="FractionClass.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

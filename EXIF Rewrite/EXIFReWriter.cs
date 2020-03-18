@@ -9,6 +9,20 @@ using static EXIF_Rewrite.CSVTags;
 
 namespace EXIF_Rewrite
 {
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = UTF8Encoding.UTF8;
+            foreach (double d in new double[] { 0.9054054, 0.518518, 0.75, 0.4285714, 0.833333,
+                0.90909, 3.14159265358979, 2.7182818284590451 })
+            {
+                var f = new Fraction(d, d >= 2 ? 65536 : 4096);
+                Console.WriteLine("{0,20} → {1}", d, f);
+
+            }
+        }
+    }
     partial class EXIFReWriter
     {
         struct UpdateMetaPair
@@ -51,7 +65,8 @@ namespace EXIF_Rewrite
                         value = c.cells[itemRow]
                     });
                 }
-                if (!ReTagImage(filePath, filePath, updatedTags))
+                //calculate output filename as rebasing base onto the output folder
+                if (!ReTagImage(filePath, System.IO.Path.Combine(outputFolder, fileName), updatedTags))
                 {
                     return false;
                 }
@@ -68,8 +83,11 @@ namespace EXIF_Rewrite
             {
                 AddModifyTag(imageIn, t.tag, t.value);
             }
+            //Do not allow overwrite
             if (fileNameOut == fileNameIn)
                 return false;
+            //Save out the updated image
+            imageIn.Save(fileNameOut);
             return true;
         }
         public static bool AddModifyTag(Image img, EXIFTag tag, string value)
@@ -114,33 +132,64 @@ namespace EXIF_Rewrite
             else
             {
                 //Deg decimal
-
+                return false;
             }
+            string directionSign = "";
             if (value.Contains("S") || value.Contains("-") || value.Contains("W"))
             {
-                deg = (0 - deg);
+                if (tag == EXIFTag.GPSLatitude)
+                {
+                    directionSign = "S";
+                }
+                else if (tag == EXIFTag.GPSLongitude)
+                {
+                    directionSign = "W";
+                }
+            }
+            else
+            {
+                if (tag == EXIFTag.GPSLatitude)
+                {
+                    directionSign = "N";
+                }
+                else if (tag == EXIFTag.GPSLongitude)
+                {
+                    directionSign = "W";
+                }
+            }
+            if (tag == EXIFTag.GPSLatitude)
+            {
+                //GPSLatitudeRef = 0x001,
+                if (AddModifyTag(img, (EXIFTag)0x0001, Encoding.ASCII.GetBytes(directionSign), EXIFTypes.ASCII) == false)
+                {
+                    return false;
+                }
+            }
+            else if (tag == EXIFTag.GPSLongitude)
+            {
+                //GPSLongitudeRef = 0x0003,
+                if (AddModifyTag(img, (EXIFTag)0x0003, Encoding.ASCII.GetBytes(directionSign), EXIFTypes.ASCII) == false)
+                {
+                    return false;
+                }
+
             }
             //Convert this float into the byte[] array desired for 3 rationals
-            // https://www.codeproject.com/Articles/9078/Fraction-class-in-C
-            //Using Fraction class to split the 3 floats into parts
-            Fraction degF = new Fraction(deg);
-            Fraction minF = new Fraction(min);
-            Fraction secF = new Fraction(sec);
-            //These are stored as a series of three pairs of uint32's
-            UInt32[] payloadUInts = new UInt32[] { (UInt32)degF.Numerator, (UInt32)degF.Denominator, (UInt32)minF.Numerator, (UInt32)minF.Denominator, (UInt32)secF.Numerator, (UInt32)secF.Denominator };
-            //Covert this to a LE byte[]
-            //BitConverter.GetBytes()
-            var results = FlatternDoubleByteArray(payloadUInts.Select(var => BitConverter.GetBytes(var)).ToArray());
 
-            //var existingTag = img.GetPropertyItem((int)EXIFTag.GPSLatitude);
+
+            var results = ConvertFloatToRational(deg).Concat(ConvertFloatToRational(min).Concat(ConvertFloatToRational(sec))).ToArray();
+
+            var existingTag = img.GetPropertyItem((int)EXIFTag.GPSLatitude);
             return AddModifyTag(img, tag, results, EXIFTypes.rational);
         }
-        static byte[] FlatternDoubleByteArray(byte[][] array)
+        static byte[] ConvertFloatToRational(float value)
         {
-            byte[] tmp = new byte[array.GetLength(0) * array.GetLength(1)];
-            Buffer.BlockCopy(array, 0, tmp, 0, tmp.Length * sizeof(byte));
-            return (tmp);
+            //Split this float into a value represented by two uint32_t numbers
+            var f = new Fraction(value, UInt32.MaxValue - 1);
+            // use bitconverter to get the two LE byte sets
+            return BitConverter.GetBytes((UInt32)(f.Numerator)).Concat(BitConverter.GetBytes((UInt32)(f.Denominator))).ToArray();
         }
+
         enum EXIFTypes
         {
             Unused = 0,
