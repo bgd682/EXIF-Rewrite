@@ -1,9 +1,0 @@
-﻿# Goals
-
-Design as rows, work top down
-
-1. Drag and drop csv to retag OR Select pre-definied operation
-2. If CSV -> Assign columns to tag OR if pre-defined operation, adjust params
-3a. Select images
-3b. Select output folder
-4. "Go"
