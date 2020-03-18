@@ -11,12 +11,19 @@ namespace EXIF_Rewrite
 {
     partial class EXIFReWriter
     {
+        public delegate void StatusUpdateHandler(object sender, float percentDone);
+        public event StatusUpdateHandler OnUpdateStatus;
+
+
+        public delegate void FinishHandler(object sender, bool completedWithoutErrors);
+        public event FinishHandler OnFinish;
+
         struct UpdateMetaPair
         {
             public EXIFTag tag;
             public string value;
         }
-        public static bool rewriteTags(string[] images, string outputFolder, List<ColumnData> tags)
+        public void rewriteTags(string[] images, string outputFolder, List<ColumnData> tags)
         {
             //https://dejanstojanovic.net/aspnet/2014/november/adding-extra-info-to-an-image-file/
             //For each provided file, find matching row in the ColumnData, the read,modify,write
@@ -25,21 +32,23 @@ namespace EXIF_Rewrite
             if (fileNameColumn.Length != 1)
             {
                 //TODO Message alert
-                return false;
+                OnFinish?.Invoke(this, false);
+                return;
             }
             var tagsToUpdate = tags.Where(c => c.ColumnTag != EXIFTag.Ignored && c.ColumnTag != EXIFTag.FileName).ToArray();
-            foreach (var filePath in images)
+            for (int index = 0; index < images.Length; index++)
             {
                 var fileName = "";
                 {
-                    System.IO.FileInfo fi = new System.IO.FileInfo(filePath);
+                    System.IO.FileInfo fi = new System.IO.FileInfo(images[index]);
                     fileName = fi.Name;
                 }
                 var itemRow = fileNameColumn[0].cells.FindIndex(fName => fName == fileName);
                 if (itemRow == -1)
                 {
                     // no matches
-                    return false;
+                    OnFinish?.Invoke(this, false);
+                    return;
                 }
                 //Update file
                 List<UpdateMetaPair> updatedTags = new List<UpdateMetaPair> { };
@@ -52,16 +61,18 @@ namespace EXIF_Rewrite
                     });
                 }
                 //calculate output filename as rebasing base onto the output folder
-                if (!ReTagImage(filePath, System.IO.Path.Combine(outputFolder, fileName), updatedTags))
+                if (!ReTagImage(images[index], System.IO.Path.Combine(outputFolder, fileName), updatedTags))
                 {
-                    return false;
-                }
 
+                    OnFinish?.Invoke(this, false);
+                    return;
+                }
+                OnUpdateStatus?.Invoke(this, ((float)index / (float)images.Length) * 100);
             }
-            return true;
+            OnFinish?.Invoke(this, true);
         }
 
-        private static bool ReTagImage(string fileNameIn, string fileNameOut, List<UpdateMetaPair> tags)
+        private bool ReTagImage(string fileNameIn, string fileNameOut, List<UpdateMetaPair> tags)
         {
             var imageIn = Bitmap.FromFile(fileNameIn);
 
@@ -76,7 +87,7 @@ namespace EXIF_Rewrite
             imageIn.Save(fileNameOut);
             return true;
         }
-        public static bool AddModifyTag(Image img, EXIFTag tag, string value)
+        public bool AddModifyTag(Image img, EXIFTag tag, string value)
         {
             //using the tag type, decode how to parse string -> bytes
             switch (tag)
@@ -96,7 +107,7 @@ namespace EXIF_Rewrite
             return false; // unhandled type encountered
         }
 
-        private static bool AddModifyRational(Image img, string value, EXIFTag tag)
+        private bool AddModifyRational(Image img, string value, EXIFTag tag)
         {
             value = new string(value.Where(c => char.IsDigit(c) || c == '.').ToArray());
 
@@ -104,7 +115,7 @@ namespace EXIF_Rewrite
             var results = ConvertFloatToRational(sourceVal);
             return AddModifyTag(img, tag, results, EXIFTypes.rational);
         }
-        private static bool AddModifyLongLat(Image img, string value, EXIFTag tag)
+        private bool AddModifyLongLat(Image img, string value, EXIFTag tag)
         {
             //parse the provided dd.mmmm or dd.mmm.sss format into a float
             float deg = 0, min = 0, sec = 0;
@@ -183,7 +194,7 @@ namespace EXIF_Rewrite
 
             return AddModifyTag(img, tag, results, EXIFTypes.rational);
         }
-        static byte[] ConvertFloatToRational(float value)
+        byte[] ConvertFloatToRational(float value)
         {
             //Split this float into a value represented by two uint32_t numbers
             var f = new Fraction(value, UInt32.MaxValue - 1);
@@ -204,7 +215,7 @@ namespace EXIF_Rewrite
             sRational = 10
 
         }
-        private static EXIFTypes TagToType(EXIFTag tag)
+        private EXIFTypes TagToType(EXIFTag tag)
         {
             switch (tag)
             {
@@ -220,7 +231,7 @@ namespace EXIF_Rewrite
             }
             return EXIFTypes.Undefined; // fallthrough
         }
-        private static bool AddModifyTag(Image img, EXIFTag tag, byte[] value, EXIFTypes type)
+        private bool AddModifyTag(Image img, EXIFTag tag, byte[] value, EXIFTypes type)
         {
             // Read - modify - write
             if ((int)tag > 0)

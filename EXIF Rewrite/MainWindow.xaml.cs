@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Linq;
+using System.Threading;
 
 namespace EXIF_Rewrite
 {
@@ -30,6 +31,7 @@ namespace EXIF_Rewrite
         private CSVTags cSVTags = new CSVTags();
         private List<string> filesToBeTagged = new List<string> { };
         private string outputFolderPath = "";
+        EXIFReWriter exifProcessor = new EXIFReWriter();
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Load in any predefinied options
@@ -43,14 +45,39 @@ namespace EXIF_Rewrite
             {
                 cbCustomOperations.SelectedIndex = 0;
             }
+            exifProcessor.OnFinish += ExifProcessor_OnFinish;
+            exifProcessor.OnUpdateStatus += ExifProcessor_OnUpdateStatus;
+            pbProgress.Minimum = 0;
+            pbProgress.Maximum = 100;
         }
 
+        private void ExifProcessor_OnUpdateStatus(object sender, float percentDone)
+        {
+            //Run on GUI thread to update progress bar
+            pbProgress.Dispatcher.BeginInvoke((Action)(() => pbProgress.Value = percentDone));
+
+        }
+
+        private void ExifProcessor_OnFinish(object sender, bool completedWithoutErrors)
+        {
+            //Hide pb and show button again
+            pbProgress.Dispatcher.BeginInvoke((Action)(() => pbProgress.Visibility = Visibility.Hidden));
+            btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Visibility = Visibility.Visible));
+            btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Content = "Done"));
+
+        }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            EXIFReWriter.rewriteTags(filesToBeTagged.ToArray(), outputFolderPath, cSVTags.parsedColumns);
-
-
+            //Show the progress bar
+            pbProgress.Visibility = Visibility.Visible;
+            btnStart.Visibility = Visibility.Hidden;
+            Thread thr = new Thread(new ThreadStart(runExifTagsThead));
+            thr.Start();
+        }
+        private void runExifTagsThead()
+        {
+            exifProcessor.rewriteTags(filesToBeTagged.ToArray(), outputFolderPath, cSVTags.parsedColumns);
         }
 
         private void btnLoadImages_Click(object sender, RoutedEventArgs e)
@@ -242,7 +269,8 @@ namespace EXIF_Rewrite
                     if (c.SelectedIndex < possibleOptions.Length)
                     {
                         columnData.ColumnTag = possibleOptions[c.SelectedIndex];
-                    }else
+                    }
+                    else
                     {
                         if (c.SelectedIndex > 0)
                         {
@@ -311,6 +339,7 @@ namespace EXIF_Rewrite
                     }
                 }
             }
+            btnStart.Content = "Start";
         }
     }
 }
