@@ -8,21 +8,7 @@ using System.Text;
 using static EXIF_Rewrite.CSVTags;
 
 namespace EXIF_Rewrite
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.OutputEncoding = UTF8Encoding.UTF8;
-            foreach (double d in new double[] { 0.9054054, 0.518518, 0.75, 0.4285714, 0.833333,
-                0.90909, 3.14159265358979, 2.7182818284590451 })
-            {
-                var f = new Fraction(d, d >= 2 ? 65536 : 4096);
-                Console.WriteLine("{0,20} → {1}", d, f);
-
-            }
-        }
-    }
+{  
     partial class EXIFReWriter
     {
         struct UpdateMetaPair
