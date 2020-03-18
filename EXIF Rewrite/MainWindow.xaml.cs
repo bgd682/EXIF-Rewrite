@@ -212,7 +212,8 @@ namespace EXIF_Rewrite
                         }
                         try
                         {
-                            cb.SelectedIndex = (int)col.ColumnTag;
+                            var possibleOptions = (EXIFReWriter.EXIFTag[])Enum.GetValues(typeof(EXIFReWriter.EXIFTag));
+                            cb.SelectedIndex = Array.FindIndex(possibleOptions, row => row == col.ColumnTag);
                         }
                         catch { }
                         Grid.SetRow(cb, 1);

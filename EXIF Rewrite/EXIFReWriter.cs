@@ -85,8 +85,7 @@ namespace EXIF_Rewrite
                 case EXIFTag.GPSLongitude:
                     return AddModifyLongLat(img, value, tag);
                 case EXIFTag.GPSAltitude:
-                    break;
-                case EXIFTag.GPSTimeStamp:
+                    AddModifyRational(img, value, tag);
                     break;
                 case EXIFTag.UserComment:
                 case EXIFTag.DateTime:
@@ -97,6 +96,14 @@ namespace EXIF_Rewrite
             return false; // unhandled type encountered
         }
 
+        private static bool AddModifyRational(Image img, string value, EXIFTag tag)
+        {
+            value = new string(value.Where(c => char.IsDigit(c) || c == '.').ToArray());
+
+            float sourceVal = float.Parse(value, System.Globalization.NumberStyles.Float);
+            var results = ConvertFloatToRational(sourceVal);
+            return AddModifyTag(img, tag, results, EXIFTypes.rational);
+        }
         private static bool AddModifyLongLat(Image img, string value, EXIFTag tag)
         {
             //parse the provided dd.mmmm or dd.mmm.sss format into a float
@@ -174,7 +181,6 @@ namespace EXIF_Rewrite
 
             var results = ConvertFloatToRational(deg).Concat(ConvertFloatToRational(min).Concat(ConvertFloatToRational(sec))).ToArray();
 
-            var existingTag = img.GetPropertyItem((int)EXIFTag.GPSLatitude);
             return AddModifyTag(img, tag, results, EXIFTypes.rational);
         }
         static byte[] ConvertFloatToRational(float value)
@@ -211,7 +217,6 @@ namespace EXIF_Rewrite
                 case EXIFTag.GPSLatitude: return EXIFTypes.rational;
                 case EXIFTag.GPSLongitude: return EXIFTypes.rational;
                 case EXIFTag.GPSAltitude: return EXIFTypes.rational;
-                case EXIFTag.GPSTimeStamp: return EXIFTypes.rational;
             }
             return EXIFTypes.Undefined; // fallthrough
         }
