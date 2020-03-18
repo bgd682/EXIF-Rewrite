@@ -5,9 +5,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
-using static EXIF_Rewrite.CSVTags;
+using static EXIFRewrite.CSVTags;
 
-namespace EXIF_Rewrite
+namespace EXIFRewrite
 {
     partial class EXIFReWriter
     {

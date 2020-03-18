@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace EXIF_Rewrite
+namespace EXIFRewrite
 {
     /// <summary>
     /// Represets the contents of a CSV file into EXIF Tags

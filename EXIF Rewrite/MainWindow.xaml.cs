@@ -16,8 +16,9 @@ using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Linq;
 using System.Threading;
+using System.Reflection;
 
-namespace EXIF_Rewrite
+namespace EXIFRewrite
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -25,8 +26,26 @@ namespace EXIF_Rewrite
     public partial class MainWindow : Window
     {
         public MainWindow()
-        {
+        {            
             InitializeComponent();
+            AppDomain.CurrentDomain.AssemblyResolve += FindDLL;
+        }
+        Dictionary<string, Assembly> _libs = new Dictionary<string, Assembly>();
+        private Assembly FindDLL(object sender, ResolveEventArgs args)
+        {
+            string keyName = new AssemblyName(args.Name).Name;
+
+            // If DLL is loaded then don't load it again just return
+            if (_libs.ContainsKey(keyName)) return _libs[keyName];
+
+
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("EXIFRewrite." + keyName + ".dll"))  // <-- To find out the Namespace name go to Your Project >> Properties >> Application >> Default namespace
+            {
+                byte[] buffer = new BinaryReader(stream).ReadBytes((int)stream.Length);
+                Assembly assembly = Assembly.Load(buffer);
+                _libs[keyName] = assembly;
+                return assembly;
+            }
         }
         private CSVTags cSVTags = new CSVTags();
         private List<string> filesToBeTagged = new List<string> { };

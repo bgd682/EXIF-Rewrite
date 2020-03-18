@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EXIF_Rewrite
+namespace EXIFRewrite
 {
     public class Fraction
     {

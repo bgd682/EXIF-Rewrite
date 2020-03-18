@@ -1,4 +1,4 @@
-﻿namespace EXIF_Rewrite
+﻿namespace EXIFRewrite
 {
     partial class EXIFReWriter
     {
