@@ -8,7 +8,7 @@ using System.Text;
 using static EXIF_Rewrite.CSVTags;
 
 namespace EXIF_Rewrite
-{  
+{
     partial class EXIFReWriter
     {
         struct UpdateMetaPair
@@ -104,8 +104,8 @@ namespace EXIF_Rewrite
             if (value.Contains("'"))
             {
                 //DMS
-                value = value.Replace("'", "").Replace("°", "").Replace("\"", "").Replace("-", "");
-                var split = value.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var value2 = value.Replace("'", "").Replace("°", "").Replace("\"", "").Replace("-", "");
+                var split = value2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (split.Length == 3 || split.Length == 4)
                 {
                     //We are good
@@ -118,7 +118,16 @@ namespace EXIF_Rewrite
             else
             {
                 //Deg decimal
-                return false;
+                // TODO NEEDS Testing
+                var value2 = value.Replace("'", "").Replace("°", "").Replace("\"", "").Replace("-", "");
+                float source = float.Parse(value2);
+                deg = (int)(source);
+                source -= deg;
+                source *= 60;
+                min = (int)source;
+                source -= min;
+                source *= 60;
+                sec = source;
             }
             string directionSign = "";
             if (value.Contains("S") || value.Contains("-") || value.Contains("W"))
