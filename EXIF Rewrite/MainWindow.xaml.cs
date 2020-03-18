@@ -64,7 +64,7 @@ namespace EXIF_Rewrite
             pbProgress.Dispatcher.BeginInvoke((Action)(() => pbProgress.Visibility = Visibility.Hidden));
             btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Visibility = Visibility.Visible));
             btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Content = "Done"));
-
+            btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Background = completedWithoutErrors ? Brushes.Green : Brushes.Red));
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -340,6 +340,7 @@ namespace EXIF_Rewrite
                 }
             }
             btnStart.Content = "Start";
+            btnStart.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0xDD, 0xDD, 0xDD));
         }
     }
 }
