@@ -77,9 +77,13 @@ namespace EXIFRewrite
 
         }
 
-        private void ExifProcessor_OnFinish(object sender, bool completedWithoutErrors)
+        private void ExifProcessor_OnFinish(object sender, bool completedWithoutErrors, EXIFReWriter.ReTagError failingMessage)
         {
             //Hide pb and show button again
+            if(completedWithoutErrors==false)
+            {
+                MessageBox.Show(failingMessage.errorMessage +((failingMessage.failingFile.Length>0)?("Failed on File "+ failingMessage.failingFile):""), "Error During Processing", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             pbProgress.Dispatcher.BeginInvoke((Action)(() => pbProgress.Visibility = Visibility.Hidden));
             btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Visibility = Visibility.Visible));
             btnStart.Dispatcher.BeginInvoke((Action)(() => btnStart.Content = "Done"));

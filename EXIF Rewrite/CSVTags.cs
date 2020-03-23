@@ -54,27 +54,32 @@ namespace EXIFRewrite
                             cells = new List<string> { },
                             ColumnTag = EXIFReWriter.EXIFTag.Ignored
                         };
-                        if (c.ColumnName.ToLower().Contains("file") || c.ColumnName.ToLower().Contains("image"))
+                        var colName = c.ColumnName.ToLower();
+                        if ((colName.Contains("file") || colName.Contains("image")) && !colName.Contains("gps"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.FileName;
                         }
-                        else if (c.ColumnName.ToLower().Contains("latitude"))
+                        else if (colName.Contains("latitude") && !colName.Contains("ref"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.GPSLatitude;
                         }
-                        else if (c.ColumnName.ToLower().Contains("longitude"))
+                        else if (colName.Contains("longitude") && !colName.Contains("ref"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.GPSLongitude;
                         }
-                        else if (c.ColumnName.ToLower().Contains("altitude") || c.ColumnName.ToLower().Contains("height"))
+                        else if ((colName.Contains("altitude") || colName.Contains("height")) && !colName.Contains("ref"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.GPSAltitude;
                         }
-                        else if (c.ColumnName.ToLower().Contains("date"))
+                        else if ((colName.Contains("altitude") || colName.Contains("height")) && colName.Contains("ref"))
+                        {
+                            c.ColumnTag = EXIFReWriter.EXIFTag.GPSAltitudeReference;
+                        }
+                        else if (colName.Contains("date"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.DateTime;
                         }
-                        else if (c.ColumnName.ToLower().Contains("comment"))
+                        else if (colName.Contains("comment"))
                         {
                             c.ColumnTag = EXIFReWriter.EXIFTag.UserComment;
                         }
