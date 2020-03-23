@@ -16,6 +16,7 @@
             GPSLatitude = 0x002,
             GPSLongitude = 0x0004,
             GPSAltitude = 0x0006,
+            GPSAltitudeReference = 0x0005,
         }
         public static string EXIFTagToString(EXIFTag tag)
         {
@@ -30,6 +31,7 @@
                 case EXIFTag.GPSLatitude: return "GPS Latitude";
                 case EXIFTag.GPSLongitude: return "GPS Longitude";
                 case EXIFTag.GPSAltitude: return "GPS Altitude (m)";
+                case EXIFTag.GPSAltitudeReference: return "GPS Altitude Ref";
             }
             return ""; // fallthrough
         }
